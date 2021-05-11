@@ -1,0 +1,18 @@
+android_app {
+    name: "RoomDatabaseTester",
+    srcs: ["src/**/*.kt"],
+    resource_dirs: ["res"],
+    static_libs: [
+        "kotlin-stdlib",
+        "androidx.appcompat_appcompat",
+        "com.google.android.material_material",
+        "androidx-constraintlayout_constraintlayout",
+        "custom-androidx.room_room-ktx",
+        "androidx.paging_paging-runtime"
+    ],
+    plugins: [
+        "custom-androidx.room_room-compiler-plugin",
+    ],
+    platform_apis: true,
+    privileged: true
+}
