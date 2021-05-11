@@ -2,6 +2,7 @@ package com.example.roomdatabasetester
 
 import android.content.Context
 import androidx.room.*
+import com.android.internal.annotations.GuardedBy
 
 const val CURRENT_DB_VERSION = 1
 
@@ -12,13 +13,22 @@ const val CURRENT_DB_VERSION = 1
 )
 abstract class TestDatabase : RoomDatabase() {
     abstract fun appInfoDao(): AppInfoDao
+
+    override fun close() {
+        synchronized(TestDatabase::class) {
+            super.close()
+            instance = null
+        }
+    }
+
     companion object {
         private const val DATABASE_NAME = "roomdatabasetest.db"
+        @GuardedBy("TestDatabase::class")
         @Volatile
         private var instance: TestDatabase? = null
 
         fun getInstance(context: Context): TestDatabase =
-            instance ?: synchronized(this) {
+            instance ?: synchronized(TestDatabase::class) {
                 instance ?: buildDatabaseInstance(context).also { instance = it }
             }
 

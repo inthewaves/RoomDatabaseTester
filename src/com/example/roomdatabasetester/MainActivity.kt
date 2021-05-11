@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.room.withTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,8 +26,10 @@ class MainActivity : AppCompatActivity() {
                 versionCode = System.currentTimeMillis().toInt() / 1000
             )
 
-            val previousAppInfo = appInfoDao.getAppInfo(appInfoToInsert.packageName)
-            appInfoDao.updateOrInsert(appInfoToInsert)
+            val previousAppInfo = database.withTransaction {
+                appInfoDao.getAppInfo(appInfoToInsert.packageName)
+                    .also { appInfoDao.updateOrInsert(appInfoToInsert) }
+            }
 
             val toastText = previousAppInfo
                 ?.let { "Inserted $appInfoToInsert. Previous app info: $it" }
